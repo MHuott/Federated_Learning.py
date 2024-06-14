@@ -7,71 +7,81 @@ Date: 06/04/2024
 import numpy as np
 import math
 import random as ran
+import matplotlib.pyplot as plt
 
+#f(x) = B^TX + B0
 def Prediction(beta, beta0, X):
-    z = np.dot(beta, X)
-    z = np.add(z, beta0)
+    z = np.dot(beta, X) + beta0
 
     return z
 
+#L = (y - f(x))^2
 def Loss(y, fun):
     loss = np.sum(np.square(y - fun))
 
     return loss
 
-def Gradient():
+def Gradient(X, y, pred):
+    gradL = np.zeros(X.shape[1])
+    for j in range(X.shape[1]):
+        gradL[j] = -2 * np.sum((y - pred) * X[:,j])
+
+    return gradL
+
+def NewBeta(gradL, beta):
+    step = 0.001
+    beta = beta - step * gradL
+
+    return beta
+
+def NewBias(y, bias, pred):
+    bias = bias - 0.001 * -2 * np.sum(y - pred)
+
+    return bias
+
+def Train(X,y,time):
+    bias = 1
+    beta = np.zeros(X.shape[1])
+    pred = Prediction(beta, bias, X)
+
+    L = Loss(y, pred)
 
 
-    return grad
+    for i in range(time):
+        newPred = Prediction(beta, bias, X)
+        gradient = Gradient(X, y, newPred)
+        beta = NewBeta(gradient, beta)
+        bias = NewBias(y, bias, newPred)
+        L = Loss(y, newPred)
+        print(f"Iteration {i + 1}, Loss: {L}")
 
+    return L
 
 
 
 matrixSize = 4
-pred = np.zeros((matrixSize, 1))
-grad = np.zeros((matrixSize, 1))
-
-
-print(pred)
 
 X = np.ones((matrixSize,matrixSize))
 
 for i in range(matrixSize):
     for j in range(matrixSize):
-        X[i][j] = X[i][j] * ran.randint(0,10)
+        X[i][j] = ran.randint(0,10)
 
+y = np.ones(matrixSize)
 
-outputSize = matrixSize
-y = np.ones(outputSize)
-
-for i in range(outputSize):
-    y[i] = y[i] * ran.randint(1,5)
+for i in range(y.shape[0]):
+    y[i] = ran.randint(1,5)
 
 print("Matrix")
 print(X)
 print("Output")
 print(y)
+time = 10000
+
+loss = Train(X, y, time)
+
+print(f"Final loss: {loss}")
 
 
-bias = 1
-beta = np.ones((1,matrixSize))
-
-print("Beta")
-print(beta)
-
-for i in range(matrixSize):
-    pred[i] = Prediction(beta, bias, X[i,:])
-
-'''print("Prediction Values")
-for i in range(matrixSize):
-    print(pred[i])
-    break'''
-
-L = Loss(y, pred)
-
-print("Loss")
-print(L)
-
-#gradient descent loser
 
 
