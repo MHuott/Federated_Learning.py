@@ -55,8 +55,15 @@ def Train(X,y,time):
         L = Loss(y, newPred)
         print(f"Iteration {i + 1}, Loss: {L}")
 
-    return L
+    return L, beta, bias
 
+def Application(beta, bias, X):
+    z = 0
+    for i in range(len(X)):
+        z += beta[i] * X[i]
+    z += bias
+
+    return z
 
 
 matrixSize = 4
@@ -76,11 +83,23 @@ print("Matrix")
 print(X)
 print("Output")
 print(y)
-time = 10000
+iteration = 100
 
-loss = Train(X, y, time)
+loss = Train(X, y, iteration)
 
-print(f"Final loss: {loss}")
+print(f"Final loss: {loss[0]}")
+
+print("Beta")
+print(loss[1])
+
+print("Bias")
+print(loss[2])
+
+a = [2,3,4,5]
+print("Guess")
+print(Application(loss[1], loss[2], a))
+
+
 
 
 
