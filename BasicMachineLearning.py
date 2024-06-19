@@ -21,12 +21,14 @@ def Loss(y, fun):
 
     return loss
 
+
 def Gradient(X, y, pred):
     gradL = np.zeros(X.shape[1])
     for j in range(X.shape[1]):
         gradL[j] = -2 * np.sum((y - pred) * X[:,j])
 
     return gradL
+
 
 def NewBeta(gradL, beta):
     step = 0.001
