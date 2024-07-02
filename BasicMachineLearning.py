@@ -79,23 +79,23 @@ def NewBeta(gradL, beta, step):
 
 
 # Function to update bias
-def NewBias(y, bias, pred, step):
-    bias = bias - step * -2 * np.sum(y - pred) / len(y)
+def NewIntercept(y, intercept, pred, step):
+    newIntercept = intercept - step * -2 * np.sum(y - pred) / len(y)
 
-    return bias
+    return intercept
 
 
 # Function to update bias
 def Train(X, y, time, step):
-    bias = 1
+    intercept = 1
     beta = np.zeros(X.shape[1])
 
     for i in range(time):
-        pred = Prediction(beta, bias, X)
+        pred = Prediction(beta, intercept, X)
         gradient = Gradient(X, y, pred)
         #gradient = SGD(X, y, lr=0.01, epoch=10, batch_size=1)
         beta = NewBeta(gradient, beta, step)
-        bias = NewBias(y, bias, pred, step)
+        bias = NewIntercept(y, bias, pred, step)
         L = LinearLoss(y, pred)
         print(f"Iteration {i + 1}, Loss: {L}")
 
