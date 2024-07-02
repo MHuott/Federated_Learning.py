@@ -14,27 +14,35 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 
+
+# Function to compute prediction
 #f(x) = B^TX + B0
 def Prediction(beta, beta0, X):
     z = np.dot(X, beta) + beta0
 
     return z
 
-#L = (y - f(x))^2
-def Loss(y, fun):
+
+# Function to compute loss
+'''
+We divide by the len of y to normalize the loss.  
+len(y) is the number of samples
+'''
+def LinearLoss(y, fun):
     loss = np.sum(np.square(y - fun)) / len(y)
 
     return loss
 
 
+# Function to compute gradient
 def Gradient(X, y, pred):
     gradL = -2 * np.dot(X.T, (y - pred)) / len(y)
 
     return gradL
 
+
 '''def StochGradient(X, y, pred, batchSize = 1):
     index = np.random.randint(0, X.shape[0], 1)'''
-
 
 '''def SGD(X, y, lr=0.05, epoch=10, batch_size=1):
     
@@ -62,17 +70,23 @@ def Gradient(X, y, pred):
 
     return m, b, log, mse'''
 
+
+# Function to update beta
 def NewBeta(gradL, beta, step):
     beta = beta - step * gradL
 
     return beta
 
+
+# Function to update bias
 def NewBias(y, bias, pred, step):
     bias = bias - step * -2 * np.sum(y - pred) / len(y)
 
     return bias
 
-def Train(X,y,time,step):
+
+# Function to update bias
+def Train(X, y, time, step):
     bias = 1
     beta = np.zeros(X.shape[1])
 
@@ -82,11 +96,13 @@ def Train(X,y,time,step):
         #gradient = SGD(X, y, lr=0.01, epoch=10, batch_size=1)
         beta = NewBeta(gradient, beta, step)
         bias = NewBias(y, bias, pred, step)
-        L = Loss(y, pred)
+        L = LinearLoss(y, pred)
         print(f"Iteration {i + 1}, Loss: {L}")
 
     return L, beta, bias
 
+
+# Function to apply the model to a new input
 def Application(beta, bias, X):
     z = np.dot(X, beta) + bias
 
@@ -141,25 +157,21 @@ for X, y in test_dataloader:
 XFlat = X.view(X.size(0), -1).numpy()
 yNumpy = y.numpy()
 
-iteration = 100
+iteration = 10000
 learningRate = 0.0001
 
 loss = Train(XFlat, yNumpy, iteration, learningRate)
 
 print(f"Final loss: {loss[0]}")
 
+'''
 print("Beta")
 print(loss[1])
 
 print("Bias")
 print(loss[2])
 
-a = [2,3,4,5]
+a = [2, 3, 4, 5]
 print("Guess")
-#print(Application(loss[1], loss[2], a))
-
-
-
-
-
-
+print(Application(loss[1], loss[2], a))
+'''
