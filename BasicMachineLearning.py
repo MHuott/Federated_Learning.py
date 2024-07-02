@@ -95,16 +95,16 @@ def Train(X, y, time, step):
         gradient = Gradient(X, y, pred)
         #gradient = SGD(X, y, lr=0.01, epoch=10, batch_size=1)
         beta = NewBeta(gradient, beta, step)
-        bias = NewIntercept(y, bias, pred, step)
+        intercept = NewIntercept(y, intercept, pred, step)
         L = LinearLoss(y, pred)
         print(f"Iteration {i + 1}, Loss: {L}")
 
-    return L, beta, bias
+    return L, beta, intercept
 
 
 # Function to apply the model to a new input
-def Application(beta, bias, X):
-    z = np.dot(X, beta) + bias
+def Application(beta, intercept, X):
+    z = np.dot(X, beta) + intercept
 
     return z
 
