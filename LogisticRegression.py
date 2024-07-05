@@ -12,6 +12,18 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 
-def LogisticPrediction():
-    np.exp(beta, beta0, X)
+def LogisticPrediction(intercept, beta, X):
+    prediction = np.exp(intercept + np.dot(beta, X)) / (1 + np.exp(intercept + np.dot(beta, X)))
+
     return prediction
+
+#penalty = -(y*log(p) + (1-y)*log(1-p))
+def LogisticLoss(y, p):
+    loss = -(y * np.log(y) + (1 - y) * np.log(1 - y))
+
+    return loss
+
+def GradLogistic():
+
+    return
+
