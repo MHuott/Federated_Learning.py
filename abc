@@ -1,0 +1,77 @@
+import numpy as np
+import torch
+from torch.utils.data import DataLoader
+from torchvision import datasets
+from torchvision.transforms import ToTensor
+
+def LogisticPrediction(intercept, beta, X):
+    z = intercept + np.dot(X, beta)
+    prediction = np.exp(z) / (1 + np.exp(z))
+    return prediction
+
+def LogisticLoss(y, p):
+    loss = -(y * np.log(p) + (1 - y) * np.log(1 - p))
+    return np.mean(loss)
+
+def GradLogistic(y, p, X):
+    logGrad = np.dot(X.T, (p - y)) / y.size
+    return logGrad
+
+def NewWeights(weights, grad, step):
+    weights = weights - step * grad
+    return weights
+
+def Train(X, y, time, step):
+    weights = np.zeros(X.shape[1])
+    intercept = 1
+
+    for i in range(time):
+        pred = LogisticPrediction(intercept, weights, X)
+        gradient = GradLogistic(y, pred, X)
+        loss = LogisticLoss(y, pred)
+        weights = NewWeights(weights, gradient, step)
+
+        # Update intercept
+        intercept -= step * np.mean(pred - y)
+
+        if (i + 1) % 100 == 0:
+            print(f"Iteration {i + 1}, Loss: {loss}")
+
+    return loss, weights, intercept
+
+# Download training data from open datasets.
+training_data = datasets.FashionMNIST(
+    root="data",
+    train=True,
+    download=True,
+    transform=ToTensor(),
+)
+
+# Download test data from open datasets.
+test_data = datasets.FashionMNIST(
+    root="data",
+    train=False,
+    download=True,
+    transform=ToTensor(),
+)
+
+batchSize = 64
+
+# Create data loaders.
+train_dataloader = DataLoader(training_data, batch_size=batchSize)
+test_dataloader = DataLoader(test_data, batch_size=batchSize)
+
+for X, y in test_dataloader:
+    print(f"Shape of X [N, C, H, W]: {X.shape}")
+    print(f"Shape of y: {y.shape} {y.dtype}")
+    break
+
+XFlat = X.view(X.size(0), -1).numpy()
+yNumpy = y.numpy()
+
+iteration = 10000
+learningRate = 0.0001
+
+loss = Train(XFlat, yNumpy, iteration, learningRate)
+
+print(f"Final loss: {loss[0]}")
