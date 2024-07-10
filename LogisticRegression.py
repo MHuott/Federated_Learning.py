@@ -16,7 +16,7 @@ import pandas as pd
 
 
 def LogisticProbability(intercept, beta, X):
-    probability = np.exp(intercept + np.dot(beta, X)) / (1 + np.exp(intercept + np.dot(beta, X)))
+    probability = np.exp(intercept + np.dot(X, beta)) / (1 + np.exp(intercept + np.dot(X, beta)))
 
     return probability
 
@@ -43,21 +43,22 @@ def NewBeta(predGrad, beta, step):
 def Train(X, y, time, step):
     prediction = np.zeros(X.shape[0])
     intercept = 0
-    beta = np.ones(X.shape[0])
-    print(prediction.shape)
+    beta = np.ones(X.shape[1])
+    print("Beta")
     print(beta.shape)
-    print(y.shape)
-    loss = 0
+
 
     for i in range(time):
-        probability = LogisticProbability(intercept, prediction, X)
+        probability = LogisticProbability(intercept, beta, X)
+        print("Probability")
+        print(probability.shape)
+        loss = LogisticLoss(y, probability)
         print(probability.shape)
         gradient = GradLogistic(prediction, X)
-        loss = LogisticLoss(y, probability)
         beta = NewBeta(probability, gradient, step)
         print(f"Iteration {i + 1}, Loss: {loss}")
 
-    return loss, prediction, intercept
+    return loss, beta, intercept
 
 data = pd.read_csv("C:/Users/mlhuo_dkvynem/OneDrive/Desktop/Raisin_Dataset.csv", sep=',')
 data['Class']= pd.factorize(data['Class'])[0]
@@ -68,6 +69,7 @@ X = data.drop('Class', axis=1)
 y = data['Class']
 
 print("y")
-print(y)
+print(y.shape)
 print("X")
-print(X)
+print(X.shape)
+Train(X=X, y=y, time=10, step=0.001)
