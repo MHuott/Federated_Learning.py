@@ -25,7 +25,7 @@ def LogisticProbability(beta, X, intercept):
         X = np.max(X,-2)
 
     probability = 1 / (1 + np.exp(-y))
-    print(probability)
+    #print(probability)
 
     return probability
 
@@ -34,8 +34,10 @@ def LogisticProbability(beta, X, intercept):
 def LogisticLoss(y, probability):
     epsilon = 1e-15
 
-    probability =  epsilon, 1 - epsilon
-    loss = -(np.dot(y, np.log(probability)) + np.dot((1 - y), np.log(1 - probability)))
+    probability =  np.clip(probability,epsilon, 1 - epsilon)
+    #print("probability: ", probability)
+    #print("y: ", y)
+    loss = -(np.dot(y.T, np.log(probability)) + np.dot((1 - y), np.log(1 - probability)))
     return loss.mean()  # Return the mean loss
 
 #intercept gradient is average difference between ground truth and probability
@@ -65,7 +67,7 @@ def Train(X, y, time, step):
 
     for i in range(time):
         probability = LogisticProbability(beta, X, intercept)
-        #loss = LogisticLoss(y, probability)
+        loss = LogisticLoss(y, probability)
         gradient = GradLogistic(probability, X, y)
         beta = NewBeta(beta, gradient[0], step)
         intercept = NewIntercept(intercept, gradient[1], step)
@@ -79,4 +81,4 @@ data['Class']= pd.factorize(data['Class'])[0]
 X = data.drop('Class', axis=1)
 y = data['Class']
 
-Train(X=X, y=y, time=10, step=0.0001)
+Train(X=X, y=y, time=20, step=0.0001)

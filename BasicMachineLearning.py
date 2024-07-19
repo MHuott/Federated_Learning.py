@@ -29,7 +29,7 @@ We divide by the len of y to normalize the loss.
 len(y) is the number of samples
 '''
 def LinearLoss(y, fun):
-    loss = np.sum(np.square(y - fun)) / len(y)
+    loss = np.sum(np.square(y - fun))
 
     return loss
 
@@ -89,6 +89,8 @@ def NewIntercept(y, intercept, pred, step):
 def Train(X, y, time, step):
     intercept = 1
     beta = np.zeros(X.shape[1])
+    loss = np.zeros(time)
+    iteration = np.zeros(time)
 
     for i in range(time):
         pred = Prediction(beta, intercept, X)
@@ -97,7 +99,23 @@ def Train(X, y, time, step):
         beta = NewBeta(gradient, beta, step)
         intercept = NewIntercept(y, intercept, pred, step)
         L = LinearLoss(y, pred)
-        print(f"Iteration {i + 1}, Loss: {L}")
+        #print(f"Iteration {i + 1}, Loss: {L}")
+        loss[i] = L
+        iteration[i] = i
+
+
+    for i in range(64):
+        print("pred", pred[i])
+        print("y", y[i])
+
+
+    '''plt.plot(iteration, loss)
+
+    csfont = {'fontname': 'Times New Roman'}
+    plt.title("Loss curve of Linear Regression", **csfont)
+    plt.xlabel("Iteration", **csfont)
+    plt.ylabel("Loss", **csfont)
+    plt.show()'''
 
     return L, beta, intercept
 
@@ -128,7 +146,7 @@ print("Output")
 print(y)'''
 
 # Download training data from open datasets.
-training_data = datasets.FashionMNIST(
+training_data = datasets.MNIST(
     root="data",
     train=True,
     download=True,
@@ -136,7 +154,7 @@ training_data = datasets.FashionMNIST(
 )
 
 # Download test data from open datasets.
-test_data = datasets.FashionMNIST(
+test_data = datasets.MNIST(
     root="data",
     train=False,
     download=True,
@@ -157,12 +175,28 @@ for X, y in test_dataloader:
 XFlat = X.view(X.size(0), -1).numpy()
 yNumpy = y.numpy()
 
-iteration = 10000
+# pick a sample to plot
+for i in range(64):
+    sample = i
+    image = X[sample]
+
+    image = image.squeeze()
+
+# plot the sample
+    fig = plt.figure
+    plt.imshow(image, cmap='bone')
+    plt.title(yNumpy[i])
+    plt.show()
+    #csfont = {'fontname': 'Times New Roman'}
+
+    #plt.xlabel("Iteration", **csfont)
+    #plt.ylabel("Loss", **csfont)'''
+
+
+iteration = 100000
 learningRate = 0.0001
 
 loss = Train(XFlat, yNumpy, iteration, learningRate)
-
-print(f"Final loss: {loss[0]}")
 
 '''
 print("Beta")
